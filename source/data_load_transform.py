@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 
 def attribute_sound_track_labels(sound_track_order, data_dict):
@@ -29,33 +30,32 @@ def attribute_sound_track_labels(sound_track_order, data_dict):
 
 
 
-    def take_data_with_label_or_not(data_dict, label, with_label = True):
+def take_data_with_label_or_not(data_dict, label, with_label = True):
     frames_to_stack = []
-    for key, data_group in nm_data_raw.items():
-
+    for key, data_group in data_dict.items():
         if with_label == True:
             selection_bools = data_group.target == label
         else:
             selection_bools = data_group.target != label
         normal_data_group = data_group[selection_bools]
-    
+
         x_columns = []
         for element in normal_data_group.columns:
             if 'X' in element:
                 #print(element)
                 x_columns.append(element)
         columns_to_select = x_columns + ['target']
-        
+
         normal_data_group_1d = normal_data_group.loc[:,columns_to_select]
         print(normal_data_group_1d.shape)
         frames_to_stack.append(normal_data_group_1d)
-        
+
     normal_data_all_1d = pd.concat(frames_to_stack) 
     return normal_data_all_1d
 
 
 
-    def transpose_by_minute(data):
+def transpose_by_minute(data):
     '''Transpose the data frame by sound track length 
     (each batch of data corresponding to one sound 
     track has to be transposed individually because one row should 

@@ -1,0 +1,12 @@
+# Ignore the data folder and all of its content
+data/
+
+# macOS system files
+.DS_Store
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Python cache
+__pycache__/
+transform_data.cpython-312.pyc
