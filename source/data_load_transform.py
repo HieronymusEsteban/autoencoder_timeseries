@@ -2,6 +2,22 @@ import pandas as pd
 import numpy as np
 
 
+def load_data(files):
+    data_raw = {}
+    for filename in files:
+        print(filename)
+        file_name_first_part = filename.split(".tsv")[0]
+        number_string = file_name_first_part.split('NM')[1]
+        print(int(number_string))
+        group_number = int(number_string)
+        data_raw[group_number] = pd.read_csv(filename, delimiter='\t', encoding='utf-8', skiprows=10, low_memory=False)
+        #print(nm_data_raw[group_number].columns)
+        column_names = data_raw[group_number].columns
+        data_raw[group_number].drop(column_names[len(column_names)-1], axis=1, inplace=True)
+        #print(nm_data_raw[group_number].columns)
+    return data_raw
+
+
 def attribute_sound_track_labels(sound_track_order, data_dict):
     for number in sound_track_order.groups:
 
