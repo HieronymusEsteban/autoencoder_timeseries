@@ -18,6 +18,19 @@ def load_data(files):
     return data_raw
 
 
+def transpose_into_dataframe(data_dict_1d):
+    frames_to_stack = []
+    for key, dataframe in data_dict_1d.items():
+        print(key)
+        dataframe_t = transpose_by_minute(dataframe)
+        #print(dataframe_t.head(3))
+        dataframe_t['group_id'] = [key]*dataframe_t.shape[0]
+        #print(dataframe_t.head(3))
+        frames_to_stack.append(dataframe_t)
+    data_1d = pd.concat(frames_to_stack)
+    return data_1d
+
+
 def attribute_sound_track_labels(sound_track_order, data_dict):
     for number in sound_track_order.groups:
 
@@ -43,7 +56,6 @@ def attribute_sound_track_labels(sound_track_order, data_dict):
         # one experimental group as a target column:
         data_dict[number]['target'] = song_labels
     return data_dict
-
 
 
 def take_data_with_label_or_not(data_dict, label, with_label = True):
@@ -72,7 +84,6 @@ def take_data_with_label_or_not(data_dict, label, with_label = True):
     return output_dictionary
 
 
-
 def transpose_by_minute(data):
     '''Transpose the data frame by sound track length 
     (each batch of data corresponding to one sound 
@@ -93,5 +104,7 @@ def transpose_by_minute(data):
 
 
 def choose_columns_no_corner(data_dict):
+    '''This function removes the columns whose names start 
+    with a C from the data.'''
     for key, df in data_dict.items(): 
         data_dict[key] = df.loc[:, ~df.columns.str.startswith('C')]
