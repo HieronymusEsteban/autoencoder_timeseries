@@ -2,6 +2,22 @@ import pandas as pd
 import numpy as np
 
 
+def load_data(files):
+    data_raw = {}
+    for filename in files:
+        print(filename)
+        file_name_first_part = filename.split(".tsv")[0]
+        number_string = file_name_first_part.split('NM')[1]
+        print(int(number_string))
+        group_number = int(number_string)
+        data_raw[group_number] = pd.read_csv(filename, delimiter='\t', encoding='utf-8', skiprows=10, low_memory=False)
+        #print(nm_data_raw[group_number].columns)
+        column_names = data_raw[group_number].columns
+        data_raw[group_number].drop(column_names[len(column_names)-1], axis=1, inplace=True)
+        #print(nm_data_raw[group_number].columns)
+    return data_raw
+
+
 def attribute_sound_track_labels(sound_track_order, data_dict):
     for number in sound_track_order.groups:
 
@@ -31,7 +47,8 @@ def attribute_sound_track_labels(sound_track_order, data_dict):
 
 
 def take_data_with_label_or_not(data_dict, label, with_label = True):
-    frames_to_stack = []
+    #frames_to_stack = []
+    output_dictionary = {}
     for key, data_group in data_dict.items():
         if with_label == True:
             selection_bools = data_group.target == label
@@ -48,10 +65,11 @@ def take_data_with_label_or_not(data_dict, label, with_label = True):
 
         normal_data_group_1d = normal_data_group.loc[:,columns_to_select]
         print(normal_data_group_1d.shape)
-        frames_to_stack.append(normal_data_group_1d)
-
-    normal_data_all_1d = pd.concat(frames_to_stack) 
-    return normal_data_all_1d
+        #frames_to_stack.append(normal_data_group_1d)
+        output_dictionary[key] = normal_data_group_1d
+    #normal_data_all_1d = pd.concat(frames_to_stack) 
+    
+    return output_dictionary
 
 
 
@@ -72,3 +90,8 @@ def transpose_by_minute(data):
         list_of_frames.append(data_t.iloc[:,:])
     data_t = pd.concat(list_of_frames, axis=0)
     return data_t
+
+
+def choose_columns_no_corner(data_dict):
+    for key, df in data_dict.items(): 
+        data_dict[key] = df.loc[:, ~df.columns.str.startswith('C')]
