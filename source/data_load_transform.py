@@ -31,7 +31,8 @@ def attribute_sound_track_labels(sound_track_order, data_dict):
 
 
 def take_data_with_label_or_not(data_dict, label, with_label = True):
-    frames_to_stack = []
+    #frames_to_stack = []
+    output_dictionary = {}
     for key, data_group in data_dict.items():
         if with_label == True:
             selection_bools = data_group.target == label
@@ -48,10 +49,11 @@ def take_data_with_label_or_not(data_dict, label, with_label = True):
 
         normal_data_group_1d = normal_data_group.loc[:,columns_to_select]
         print(normal_data_group_1d.shape)
-        frames_to_stack.append(normal_data_group_1d)
-
-    normal_data_all_1d = pd.concat(frames_to_stack) 
-    return normal_data_all_1d
+        #frames_to_stack.append(normal_data_group_1d)
+        output_dictionary[key] = normal_data_group_1d
+    #normal_data_all_1d = pd.concat(frames_to_stack) 
+    
+    return output_dictionary
 
 
 
@@ -72,3 +74,8 @@ def transpose_by_minute(data):
         list_of_frames.append(data_t.iloc[:,:])
     data_t = pd.concat(list_of_frames, axis=0)
     return data_t
+
+
+def choose_columns_no_corner(data_dict):
+    for key, df in data_dict.items(): 
+        data_dict[key] = df.loc[:, ~df.columns.str.startswith('C')]
